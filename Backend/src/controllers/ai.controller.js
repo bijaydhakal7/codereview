@@ -1,27 +1,18 @@
-const aiService = require("../services/ai.service");
+const { getGeminiResponse } = require("../services/ai.service");
 
-module.exports.getResponse = async (req, res) => {
+exports.getResponse = async (req, res) => {
   try {
-    const { prompt } = req.query;
+    const { prompt } = req.body;
 
     if (!prompt) {
-      return res.status(400).json({
-        error: "Prompt query parameter is required",
-      });
+      return res.status(400).json({ error: "Prompt is required" });
     }
 
-    const response = await aiService(prompt);
-
-    res.status(200).json({
-      success: true,
-      response,
-    });
+    const reply = await getGeminiResponse(prompt);
+    res.json({ reply });
   } catch (error) {
     console.error(error);
-    res.status(500).json({
-      success: false,
-      error: "AI response failed",
-    });
+    res.status(500).json({ error: "Gemini API failed" });
   }
-
+  
 };
